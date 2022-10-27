@@ -2,9 +2,9 @@ import express from 'express';
 import http from 'http';
 import mongoose from 'mongoose';
 import { config } from './config/config';
-import { unknownRoute, errorHandler } from './helpers/errorHandlers';
+import { unknownRoute, errorHandler } from './helpers';
 import Logging from './library/Logging';
-import authRouter from './routes/Auth';
+import { AuthRouter, RolesRouter, UserRouter } from './routes';
 
 const app = express();
 
@@ -36,6 +36,7 @@ const StartServer = () => {
 
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
+    app.use(express.static('src/public'));
 
     /** Rules of our API */
     app.use((req, res, next) => {
@@ -51,10 +52,9 @@ const StartServer = () => {
     });
 
     /** Routes */
-    app.use('/api/auth', authRouter);
-
-    /** Healthcheck */
-    app.get('/ping', (req, res, next) => res.status(200).json({ message: 'pong' }));
+    app.use('/api/auth', AuthRouter);
+    app.use('/api/roles', RolesRouter);
+    app.use('/api/user', UserRouter);
 
     /** Error handling */
     app.use(unknownRoute);

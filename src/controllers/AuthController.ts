@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import asyncHandler from 'express-async-handler';
 import bcrypt from 'bcryptjs';
-import { sign, verify } from 'jsonwebtoken';
-import { config } from '../config/config';
-import { CustomError } from '../helpers/customError';
-import UserModel from '../models/UserModel';
+import { sign } from 'jsonwebtoken';
+import { config } from '../config';
+import { CustomError } from '../helpers';
+import { UserModel } from '../models';
 import { IJoiUser } from '../interfaces/JoiUser';
-import { TokenData, DataStoredInToken, RequestWithToken } from '../interfaces';
+import { TokenData, DataStoredInToken } from '../interfaces';
 
 class AuthController {
     register = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
@@ -52,14 +52,29 @@ class AuthController {
         const { token } = this.generateToken(user._id);
         user.token = token;
         await user.save();
+
         if (!user.token) {
-            throw new CustomError(`Unable to save token.`, 400, 'Token has not been saved.');
+            throw new CustomError(`Unable to save token.`);
         }
 
         res.status(200).json({ code: 200, stutus: 'success', token });
     });
 
-    logout = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {});
+    logout = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const { _id } = req.user;
+
+        const user = await UserModel.findById(_id);
+        if (!user) {
+            throw new CustomError(`Unable to logout.`, 400, 'Please try again.');
+        }
+        user.token = null;
+        await user.save();
+
+        if (user.token) {
+            throw new CustomError(`Unable to update token in DB.`);
+        }
+        res.status(200).json({ code: 200, stutus: 'success', message: 'Logout success.' });
+    });
 
     info = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {});
 

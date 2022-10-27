@@ -1,24 +1,23 @@
 import { Document, Schema, model } from 'mongoose';
+import gravatar from 'gravatar';
+import { IRole } from './RoleModel';
 
-export interface IRole {
-    value: string;
-    [key: string]: any;
-}
 export interface IUser {
-    name: string;
+    userName: string;
     userEmail: string;
     userPassword: string;
-    token: string;
+    token: string | null;
     roles: Array<IRole>;
+    avatar: string;
 }
 
-export interface IUserModel extends IUser, Document {}
+interface IUserModel extends IUser, Document {}
 
-const UserSchema: Schema = new Schema(
+const UserSchema: Schema = new Schema<IUser>(
     {
         userName: {
             type: String,
-            default: 'John Doe'
+            default: 'User'
         },
         userEmail: {
             type: String,
@@ -37,9 +36,15 @@ const UserSchema: Schema = new Schema(
                 type: String,
                 ref: 'Role'
             }
-        ]
+        ],
+        avatar: {
+            type: String,
+            default: function () {
+                return gravatar.url(this.userEmail, { s: '250' }, true);
+            }
+        }
     },
     { versionKey: false, timestamps: true }
 );
 
-export default model<IUserModel>('User', UserSchema);
+export const UserModel = model<IUserModel>('User', UserSchema);
