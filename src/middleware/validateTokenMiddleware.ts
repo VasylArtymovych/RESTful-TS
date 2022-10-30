@@ -24,6 +24,6 @@ export default (req: Request, res: Response, next: NextFunction) => {
         if (error instanceof CustomError) {
             next(error);
         }
-        next(new CustomError('Unable to decode token', 400));
+        next(new CustomError('Unable to decode token', 400, 'Provide valid token'));
     }
 };

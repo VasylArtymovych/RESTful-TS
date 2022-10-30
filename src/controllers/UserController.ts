@@ -3,8 +3,7 @@ import asyncHandler from 'express-async-handler';
 import Jimp from 'jimp';
 import path from 'path';
 import fs from 'fs/promises';
-import { UserModel } from '../models';
-import { CustomError } from '../helpers';
+import { UserServices } from '../services';
 
 const avatarDir = path.join(__dirname, '..', 'public', 'avatar');
 
@@ -24,10 +23,7 @@ class UserController {
             await fs.rename(tempDir, saveImgDir);
 
             const avatarUrl = path.join('avatar', filename);
-            const user = await UserModel.findOneAndUpdate({ _id }, { avatar: avatarUrl }, { new: true });
-            if (!user) {
-                throw new CustomError('Unable to update avatar');
-            }
+            await UserServices.updateAvatar(_id, avatarUrl);
 
             res.status(200).json({ code: 200, status: 'success', avatarUrl });
         } catch (error) {

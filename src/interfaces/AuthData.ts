@@ -1,4 +1,4 @@
-export interface IJoiUser {
+export interface IAuthData {
     userName?: string;
     userEmail: string;
     userPassword: string;

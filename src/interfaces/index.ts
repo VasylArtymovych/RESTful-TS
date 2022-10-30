@@ -1,2 +1,2 @@
-export * from './JoiUser';
+export * from './AuthData';
 export * from './Token';
