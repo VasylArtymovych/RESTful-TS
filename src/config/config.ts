@@ -10,6 +10,16 @@ const SERVER_PORT = process.env.SERVER_PORT ? Number(process.env.SERVER_PORT) : 
 const NODE_ENV = process.env.NODE_ENV || 'production';
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || '';
 
+const transporterOptions = {
+    host: 'smtp.meta.ua',
+    port: 465,
+    secure: true, // true for 465, false for other ports
+    auth: {
+        user: process.env.EMAIL_SERVICE_LOGIN, // generated ethereal user
+        pass: process.env.EMAIL_SERVICE_PASS // generated ethereal password
+    }
+};
+
 export const config = {
     mongo: {
         url: MONGO_URL
@@ -20,5 +30,9 @@ export const config = {
     },
     token: {
         secret: JWT_SECRET_KEY
+    },
+
+    nodemailer: {
+        transporterOptions
     }
 };

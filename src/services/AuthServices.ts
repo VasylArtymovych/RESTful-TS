@@ -22,7 +22,7 @@ class AuthServices {
             throw new CustomError('Unable to hash password.');
         }
 
-        const user = await UserModel.create({ ...body, userPassword: hashPassword });
+        const user = await UserModel.create({ ...body, userPassword: hashPassword, roles: ['USER'] });
         if (!user) {
             throw new CustomError('Unable to save User in DB.');
         }

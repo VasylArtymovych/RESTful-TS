@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import Jimp from 'jimp';
 import path from 'path';
@@ -8,7 +8,7 @@ import { UserServices } from '../services';
 const avatarDir = path.join(__dirname, '..', 'public', 'avatar');
 
 class UserController {
-    updateAvatar = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    updateAvatar = asyncHandler(async (req: Request, res: Response) => {
         const { _id } = req.user;
         const { path: tempDir, filename } = req.file!;
 
@@ -30,6 +30,14 @@ class UserController {
             await fs.unlink(tempDir);
             throw error;
         }
+    });
+
+    about = asyncHandler(async (req: Request, res: Response) => {
+        const user = await res.render('about', {});
+    });
+
+    sendMsg = asyncHandler(async (req: Request, res: Response) => {
+        res.render('send');
     });
 }
 

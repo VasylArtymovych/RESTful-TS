@@ -5,6 +5,8 @@ import { config } from './config/config';
 import { unknownRoute, errorHandler } from './helpers';
 import Logging from './library/Logging';
 import { AuthRouter, RolesRouter, UserRouter } from './routes';
+import { engine } from 'express-handlebars';
+import path from 'path';
 
 const app = express();
 
@@ -37,6 +39,18 @@ const StartServer = () => {
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
     app.use(express.static('src/public'));
+    /** Handlebars setup */
+    app.engine(
+        'handlebars',
+        engine({
+            defaultLayout: 'main',
+            extname: 'handlebars',
+            layoutsDir: path.join(__dirname, 'views/layouts'),
+            partialsDir: path.join(__dirname, 'views')
+        })
+    );
+    app.set('view engine', 'handlebars');
+    app.set('views', path.join(__dirname, 'views'));
 
     /** Rules of our API */
     app.use((req, res, next) => {
